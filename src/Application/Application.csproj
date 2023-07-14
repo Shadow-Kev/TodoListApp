@@ -30,5 +30,8 @@
       <Generator></Generator>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Features\Todos\Commands\" />
+  </ItemGroup>
 
 </Project>
