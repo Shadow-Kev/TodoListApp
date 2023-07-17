@@ -31,6 +31,13 @@ namespace BlazorHero.CleanArchitecture.Shared.Constants.Permission
             public const string Search = "Permissions.Brands.Search";
             public const string Import = "Permissions.Brands.Import";
         }
+        [DisplayName("Todos")]
+        [Description("Todos Permissions")]
+        public static class Todos
+        {
+            public const string View = "Permissions.Todos.View";
+            public const string Search = "Permissions.Todos.Search";
+        }
 
         [DisplayName("Documents")]
         [Description("Documents Permissions")]

@@ -86,6 +86,10 @@
             </MudNavLink>
         }
     }
+    <MudListSubheader Class="mt-2 mb-n2">@_localizer["Todos Management"]</MudListSubheader>
+    <MudNavLink Href="/todos" Icon="@Icons.Material.Outlined.DocumentScanner">
+        @_localizer["Todos"]
+    </MudNavLink>
 </MudNavMenu>
 
 @code {
@@ -101,6 +105,7 @@
     private bool _canViewChat;
     private bool _canViewProducts;
     private bool _canViewBrands;
+    private bool _canViewTodos;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -115,5 +120,6 @@
         _canViewChat = (await _authorizationService.AuthorizeAsync(_authenticationStateProviderUser, Permissions.Communication.Chat)).Succeeded;
         _canViewProducts = (await _authorizationService.AuthorizeAsync(_authenticationStateProviderUser, Permissions.Products.View)).Succeeded;
         _canViewBrands = (await _authorizationService.AuthorizeAsync(_authenticationStateProviderUser, Permissions.Brands.View)).Succeeded;
+        _canViewTodos = (await _authorizationService.AuthorizeAsync(_authenticationStateProviderUser, Permissions.Todos.View)).Succeeded;
     }
 }

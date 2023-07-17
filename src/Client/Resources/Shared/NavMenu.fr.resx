@@ -180,6 +180,12 @@
   <data name="Swagger" xml:space="preserve">
     <value>Swagger</value>
   </data>
+  <data name="Todos" xml:space="preserve">
+    <value>Tâches</value>
+  </data>
+  <data name="Todos Management" xml:space="preserve">
+    <value>Gestion des tâches</value>
+  </data>
   <data name="Users" xml:space="preserve">
     <value>Utilisateurs</value>
   </data>

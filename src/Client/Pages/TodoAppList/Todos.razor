@@ -1,0 +1,54 @@
+﻿@page "/todos"
+@*@attribute [Authorize(Policy = Permissions.Todos.View)]*@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Todos> _localizer
+@using BlazorHero.CleanArchitecture.Application.Features.Todos.Queries.GetAll;
+
+<style>
+    .mud-table-container {
+        overflow: auto;
+    }
+</style>
+
+<HeroTitle Title="@_localizer["Todos"]" Description="@_localizer["Manage Todos."]" />
+@if (!_loaded)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else
+{
+    <MudTable Hover="true" Elevation="25" Items="_todosList" Dense="@_dense" Bordered="@_bordered" Striped="@_striped" Filter="new Func<GetAllTodosResponse, bool>(Search)" @bind-todo="_todo">
+        <ToolBarContent>
+            @if (_canSearchTodos)
+            {
+                <MudTextField @bind-Value="_searchString" Immediate="true" Placeholder="@_localizer["Search for Todos"]" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0 mb-3"></MudTextField>
+            }
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<GetAllTodosResponse, object>(x => x.Id)">@_localizer["Id"]</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<GetAllTodosResponse, object>(x => x.Title)">@_localizer["Title"]</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<GetAllTodosResponse, object>(x => x.Description)">@_localizer["Description"]</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<GetAllTodosResponse, object>(x => x.Priority)">@_localizer["Priority"]</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<GetAllTodosResponse, object>(x => x.IsCompleteted)">@_localizer["Is Completed"]</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<GetAllTodosResponse, object>(x => x.ExpirationDate)">@_localizer["Expiration Date"]</MudTableSortLabel></MudTh>
+            <MudTh Style="text-align:right">@_localizer["Actions"]</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Id">@context.Id</MudTd>
+            <MudTd DataLabel="Title">
+                <MudHighlighter Text="@context.Title" HighlightedText="@_searchString" /> 
+            </MudTd>
+            <MudTd DataLabel="Description">
+                <MudHighlighter Text="@context.Description" HighlightedText="@_searchString" />
+            </MudTd>
+            <MudTd DataLabel="Priority">@context.Priority</MudTd>
+        </RowTemplate>
+        <FooterContent>
+            <MudSwitch @bind-Checked="@_dense" Color="Color.Secondary" Style="margin-left: 5px;">@_localizer["Dense"]</MudSwitch>
+            <MudSwitch @bind-Checked="@_striped" Color="Color.Tertiary" Style="margin-left: 5px;">@_localizer["Striped"]</MudSwitch>
+            <MudSwitch @bind-Checked="@_bordered" Color="Color.Warning" Style="margin-left: 5px;">@_localizer["Bordered"]</MudSwitch>
+        </FooterContent>
+        <PagerContent>
+            <TablePager />
+        </PagerContent>
+    </MudTable>        
+}
