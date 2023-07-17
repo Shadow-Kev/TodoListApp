@@ -37,6 +37,9 @@ namespace BlazorHero.CleanArchitecture.Shared.Constants.Permission
         {
             public const string View = "Permissions.Todos.View";
             public const string Search = "Permissions.Todos.Search";
+            public const string Create = "Permissions.Todos.Create";
+            public const string Edit = "Permissions.Todos.Edit";
+            public const string Delete = "Permissions.Todos.Delete";
         }
 
         [DisplayName("Documents")]

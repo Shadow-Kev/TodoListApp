@@ -1,4 +1,5 @@
-﻿using BlazorHero.CleanArchitecture.Application.Features.Todos.Queries.GetAll;
+﻿using BlazorHero.CleanArchitecture.Application.Features.Todos.Commands.AddEdit;
+using BlazorHero.CleanArchitecture.Application.Features.Todos.Queries.GetAll;
 using BlazorHero.CleanArchitecture.Shared.Constants.Permission;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,17 @@ namespace BlazorHero.CleanArchitecture.Server.Controllers.v1.TodoAppList
         {
             var todos = await _mediator.Send(new GetAllTodosQuery());
             return Ok(todos);
+        }
+        /// <summary>
+        /// Create/Update a Todo
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns>Status 200 OK</returns>
+        [Authorize(Policy = Permissions.Todos.Create)]
+        [HttpPost]
+        public async Task<IActionResult> Post(AddEditTodoCommand command)
+        {
+            return Ok(await _mediator.Send(command));
         }
     }
 }
