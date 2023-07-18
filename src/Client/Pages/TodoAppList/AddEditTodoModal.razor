@@ -1,0 +1,61 @@
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<AddEditTodoModal> _localizer
+
+<EditForm Model="@AddEditTodoModel" OnValidSubmit="SaveAsync">
+    <FluentValidationValidator @ref="_fluentValidationValidator" /> 
+    <MudDialog>
+        <TitleContent>
+            @{
+                if(AddEditTodoModel.Id == 0)
+                {
+                    <MudText Typo="Typo.h6">
+                        <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3 mb-n1" />
+                        @_localizer["Add Todo"]
+                    </MudText>
+                }
+                else
+                {
+                    <MudText Typo="Typo.h6">
+                        <MudIcon Icon="@Icons.Material.Filled.Update" Class="mr-3 mb-n1" />
+                        @_localizer["Update Todo"]
+                    </MudText>
+                }
+            }
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                @if (AddEditTodoModel.Id != 0)
+                {
+                    <MudItem xs="12" md="6">
+                        <MudTextField Disabled For="@(() => AddEditTodoModel.Id)" @bind-Value="AddEditTodoModel.Id" Label="@_localizer["Id"]" />
+                    </MudItem>
+                }
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string" For="@(() => AddEditTodoModel.Title)" @bind-Value="AddEditTodoModel.Title" Label="@_localizer["Title"]" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField For="@(() => AddEditTodoModel.Description)" @bind-Value="AddEditTodoModel.Description" Label="@_localizer["Description"]" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField For="@(() => AddEditTodoModel.Priority)" @bind-Value="AddEditTodoModel.Priority" Label="@_localizer["Priority"]" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField For="@(() => AddEditTodoModel.IsCompleteted)" @bind-Value="AddEditTodoModel.IsCompleteted" Label="@_localizer["Is Completed"]" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField For="@(() => AddEditTodoModel.ExpirationDate)" @bind-Value="AddEditTodoModel.ExpirationDate" Label="@_localizer["Expiration Date"]" />
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton DisableElevation Variant="Variant.Filled" OnClick="Cancel">@_localizer["Cancel"]</MudButton>
+            @if (AddEditTodoModel.Id != 0)
+            {
+                <MudButton DisableElevation Variant="Variant.Filled" ButtonType="ButtonType.Submit" Disabled="@(!Validated)" Color="Color.Secondary">@_localizer["Update"]</MudButton>
+            }
+            else
+            {
+                <MudButton DisableElevation Variant="Variant.Filled" ButtonType="ButtonType.Submit" Disabled="@(!Validated)" Color="Color.Success">@_localizer["Save"]</MudButton>
+            }
+        </DialogActions>
+    </MudDialog>
+</EditForm>

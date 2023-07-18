@@ -1,5 +1,6 @@
-﻿using BlazorHero.CleanArchitecture.Application.Features.Todos.Queries.GetAll;
+﻿using BlazorHero.CleanArchitecture.Application.Features.Todos.Commands.AddEdit;
 using BlazorHero.CleanArchitecture.Client.Extensions;
+using BlazorHero.CleanArchitecture.Application.Features.Todos.Queries.GetAll;
 using BlazorHero.CleanArchitecture.Client.Infrastructure.Managers.TodoListApp.Todo;
 using BlazorHero.CleanArchitecture.Shared.Constants.Permission;
 using Microsoft.AspNetCore.Authorization;
@@ -28,6 +29,8 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.TodoAppList
 
         private ClaimsPrincipal _currentUser;
         private bool _canSearchTodos;
+        private bool _canCreateTodos;
+        private bool _canEditTodos;
         private bool _canViewTodos;
         private bool _loaded;
 
@@ -36,6 +39,8 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.TodoAppList
             _currentUser = await _authenticationManager.CurrentUser();
             _canSearchTodos = (await _authorizationService.AuthorizeAsync(_currentUser, Permissions.Todos.Search)).Succeeded;
             _canViewTodos = (await _authorizationService.AuthorizeAsync(_currentUser, Permissions.Todos.View)).Succeeded;
+            _canCreateTodos = (await _authorizationService.AuthorizeAsync(_currentUser, Permissions.Todos.Create)).Succeeded;
+            _canEditTodos = (await _authorizationService.AuthorizeAsync(_currentUser, Permissions.Todos.Edit)).Succeeded;
 
             await GetTodosAsync();
             _loaded = true;
@@ -46,6 +51,7 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.TodoAppList
             }
 
         }
+
         private async Task GetTodosAsync()
         {
             var response = await TodoManager.GetAllAsync();
@@ -60,6 +66,40 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.TodoAppList
                     _snackBar.Add(message, Severity.Error);
                 }
             }
+        }
+
+        private async Task InvokeModal(int id = 0)
+        {
+            var parameters = new DialogParameters();
+            if (id != 0)
+            {
+                _todo = _todosList.FirstOrDefault(t => t.Id == id);
+                if (_todo != null )
+                {
+                    parameters.Add(nameof(AddEditTodoModal.AddEditTodoModel), new AddEditTodoCommand
+                    {
+                        Id = _todo.Id,
+                        Title = _todo.Title,
+                        Description = _todo.Description,
+                        Priority = _todo.Priority,
+                        ExpirationDate = _todo.ExpirationDate,
+                        IsCompleteted = _todo.IsCompleteted
+                    });
+                }
+                var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, DisableBackdropClick = true };
+                var dialog = _dialogService.Show<AddEditTodoModal>(id == 0 ? _localizer["Create"] : _localizer["Edit"], parameters, options);
+                var result = await dialog.Result;
+                if (!result.Cancelled)
+                {
+                    await Reset();
+                }
+            }
+        }
+
+        private async Task Reset()
+        {
+            _todo = new GetAllTodosResponse();
+            await GetTodosAsync();
         }
         private bool Search(GetAllTodosResponse todo)
         {

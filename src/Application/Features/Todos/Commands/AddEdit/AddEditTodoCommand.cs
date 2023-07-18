@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -17,13 +18,17 @@ namespace BlazorHero.CleanArchitecture.Application.Features.Todos.Commands.AddEd
     public partial class AddEditTodoCommand : IRequest<Result<int>>
     {
         public int Id { get; set; }
+        [Required]
         public string Title { get; set; }
+        [Required]
         public string Description { get; set; }
+        [Required]
         public DateTime ExpirationDate { get; set; }
+        [Required]
         public int Priority { get; set; }
         public bool IsCompleteted { get; set; }
     }
-    internal class AddEditTodoCommandHandler : IRequest<AddEditTodoCommand, Result<int>>
+    internal class AddEditTodoCommandHandler : IRequestHandler<AddEditTodoCommand, Result<int>>
     {
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<AddEditTodoCommand> _localizer;
