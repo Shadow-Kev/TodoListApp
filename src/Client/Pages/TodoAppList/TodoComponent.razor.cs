@@ -1,69 +1,81 @@
 ﻿using BlazorHero.CleanArchitecture.Application.Features.Todos.Commands.AddEdit;
-using BlazorHero.CleanArchitecture.Client.Extensions;
 using BlazorHero.CleanArchitecture.Application.Features.Todos.Queries.GetAll;
 using BlazorHero.CleanArchitecture.Client.Infrastructure.Managers.TodoListApp.Todo;
-using BlazorHero.CleanArchitecture.Shared.Constants.Permission;
-using Microsoft.AspNetCore.Authorization;
+using BlazorHero.CleanArchitecture.Client.Shared.Dialogs;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace BlazorHero.CleanArchitecture.Client.Pages.TodoAppList
 {
-    public partial class Todos
+    public partial class TodoComponent
     {
         [Inject] private ITodoManager TodoManager { get; set; }
-        [CascadingParameter] private HubConnection HubConnection { get; set; }
 
-        private List<GetAllTodosResponse> _todosList = new ();
+        private List<GetAllTodosResponse> _todoList = new();
         private GetAllTodosResponse _todo = new();
+        private AddEditTodoCommand _command { get; set; } = new();
         private string _searchString = "";
+        private bool _loading = true;
         private bool _dense = false;
         private bool _striped = true;
         private bool _bordered = false;
 
-        private ClaimsPrincipal _currentUser;
-        private bool _canSearchTodos;
-        private bool _canCreateTodos;
-        private bool _canEditTodos;
-        private bool _canViewTodos;
-        private bool _loaded;
-
         protected override async Task OnInitializedAsync()
         {
-            _currentUser = await _authenticationManager.CurrentUser();
-            _canSearchTodos = (await _authorizationService.AuthorizeAsync(_currentUser, Permissions.Todos.Search)).Succeeded;
-            _canViewTodos = (await _authorizationService.AuthorizeAsync(_currentUser, Permissions.Todos.View)).Succeeded;
-            _canCreateTodos = (await _authorizationService.AuthorizeAsync(_currentUser, Permissions.Todos.Create)).Succeeded;
-            _canEditTodos = (await _authorizationService.AuthorizeAsync(_currentUser, Permissions.Todos.Edit)).Succeeded;
-
             await GetTodosAsync();
-            _loaded = true;
-            HubConnection = HubConnection.TryInitialize(_navigationManager, _localStorage);
-            if (HubConnection.State == HubConnectionState.Disconnected)
-            {
-                await HubConnection.StartAsync();
-            }
-
+            _loading = false;
         }
 
         private async Task GetTodosAsync()
         {
-            var response = await TodoManager.GetAllAsync();
-            if (response.Succeeded)
+            await Reset();
+        }
+        private async Task Reset()
+        {
+            var result = await TodoManager.GetAllAsync();
+            if (result.Succeeded)
             {
-                _todosList = response.Data.ToList();
+                _todoList = result.Data;
+                _loading = false;
             }
             else
             {
-                foreach (var message in response.Messages)
+                foreach (var message in result.Messages)
                 {
                     _snackBar.Add(message, Severity.Error);
+                }
+            }
+        }
+
+        private async Task Delete(int id)
+        {
+            string deleteContent = _localizer["Delete Content"];
+            var parameters = new DialogParameters
+            {
+                {nameof(DeleteConfirmation.ContentText), string.Format(deleteContent, id) }
+            };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, DisableBackdropClick = true };
+            var dialog = _dialogService.Show<DeleteConfirmation>(_localizer["Delete"], parameters, options);
+            var result = await dialog.Result;
+            if (!result.Cancelled)
+            {
+                var response = await TodoManager.DeleteAsync(id);
+                if (response.Succeeded)
+                {
+                    await Reset();
+                    _snackBar.Add(response.Messages[0], Severity.Success);
+                }
+                else
+                {
+                    await Reset();
+                    foreach (var message in response.Messages)
+                    {
+                        _snackBar.Add(message, Severity.Error);
+                    }
                 }
             }
         }
@@ -73,8 +85,8 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.TodoAppList
             var parameters = new DialogParameters();
             if (id != 0)
             {
-                _todo = _todosList.FirstOrDefault(t => t.Id == id);
-                if (_todo != null )
+                _todo = _todoList.FirstOrDefault(t => t.Id == id);
+                if (_todo != null)
                 {
                     parameters.Add(nameof(AddEditTodoModal.AddEditTodoModel), new AddEditTodoCommand
                     {
@@ -96,11 +108,6 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.TodoAppList
             }
         }
 
-        private async Task Reset()
-        {
-            _todo = new GetAllTodosResponse();
-            await GetTodosAsync();
-        }
         private bool Search(GetAllTodosResponse todo)
         {
             if (string.IsNullOrWhiteSpace(_searchString)) return true;
@@ -111,5 +118,7 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.TodoAppList
             return todo.Description?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true;
 
         }
+
+
     }
 }

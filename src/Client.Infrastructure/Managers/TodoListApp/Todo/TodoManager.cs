@@ -1,5 +1,6 @@
 ﻿using BlazorHero.CleanArchitecture.Application.Features.Todos.Commands.AddEdit;
 using BlazorHero.CleanArchitecture.Application.Features.Todos.Queries.GetAll;
+using BlazorHero.CleanArchitecture.Application.Features.Todos.Queries.GetById;
 using BlazorHero.CleanArchitecture.Client.Infrastructure.Extensions;
 using BlazorHero.CleanArchitecture.Shared.Wrapper;
 using System.Collections.Generic;
@@ -25,6 +26,16 @@ namespace BlazorHero.CleanArchitecture.Client.Infrastructure.Managers.TodoListAp
         public async Task<IResult<int>> SaveAsync(AddEditTodoCommand request)
         {
            var response = await _httpClient.PostAsJsonAsync(Routes.TodosEndpoint.Save, request);
+            return await response.ToResult<int>();
+        }
+        public async Task<IResult<GetTodoByIdResponse>> GetByIdAsync(GetTodoByIdQuery request)
+        {
+            var response = await _httpClient.GetAsync($"{Routes.TodosEndpoint.GetById}/{request.Id}");
+            return await response.ToResult<GetTodoByIdResponse>();
+        }
+        public async Task<IResult<int>> DeleteAsync(int id)
+        {
+            var response = await _httpClient.DeleteAsync($"{Routes.TodosEndpoint.Delete}/{id}");
             return await response.ToResult<int>();
         }
     }

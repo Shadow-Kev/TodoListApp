@@ -1,35 +1,29 @@
 ﻿@page "/todos"
-@attribute [Authorize(Policy = Permissions.Todos.View)]
-@inject Microsoft.Extensions.Localization.IStringLocalizer<Todos> _localizer
 @using BlazorHero.CleanArchitecture.Application.Features.Todos.Queries.GetAll;
+@inject Microsoft.Extensions.Localization.IStringLocalizer<TodoComponent> _localizer;
 
 <style>
     .mud-table-container {
         overflow: auto;
     }
 </style>
-
 <HeroTitle Title="@_localizer["Todos"]" Description="@_localizer["Manage Todos."]" />
-@if (!_loaded)
+@if(_loading)
 {
     <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
 }
 else
 {
-    <MudTable Hover="true" Elevation="25" Items="_todosList" Dense="@_dense" Bordered="@_bordered" Striped="@_striped" Filter="new Func<GetAllTodosResponse, bool>(Search)" @bind-todo="_todo">
+    <MudTable Hover="true" Elevation="25" Items="_todoList" Dense="@_dense" Bordered="@_bordered" Striped="@_striped" Filter="new Func<GetAllTodosResponse, bool>(Search)" @bind-todo="_todo"> 
         <ToolBarContent>
             <div class="justify-center mud-text-align-center">
-                
-                <MudButton DisableElevation Variant="Variant.Filled" Color="Color.Primary" OnClick="() => InvokeModal()" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface">@_localizer["Create"]</MudButton>
+                <MudButton DisableElevation Variant="Variant.Filled" Color="Color.Primary" OnClick="(() => InvokeModal())" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface">@_localizer["Créer"]</MudButton>
+                <MudButton DisableElevation Variant="Variant.Filled" OnClick="GetTodosAsync" StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Secondary">@_localizer["Actualiser"]</MudButton>
             </div>
             <MudSpacer />
-            @if (_canSearchTodos)
-            {
-                <MudTextField @bind-Value="_searchString" Immediate="true" Placeholder="@_localizer["Search for Todos"]" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0 mb-3"></MudTextField>
-            }
+            <MudTextField @bind-Value="@_searchString" Immediate="true" Placeholder="@_localizer["Search for Todos"]" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0 mb-3" ></MudTextField>
         </ToolBarContent>
         <HeaderContent>
-            <MudTh><MudTableSortLabel SortBy="new Func<GetAllTodosResponse, object>(x => x.Id)">@_localizer["Id"]</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<GetAllTodosResponse, object>(x => x.Title)">@_localizer["Title"]</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<GetAllTodosResponse, object>(x => x.Description)">@_localizer["Description"]</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<GetAllTodosResponse, object>(x => x.Priority)">@_localizer["Priority"]</MudTableSortLabel></MudTh>
@@ -38,16 +32,15 @@ else
             <MudTh Style="text-align:right">@_localizer["Actions"]</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Id">@context.Id</MudTd>
-            <MudTd DataLabel="Title">
-                <MudHighlighter Text="@context.Title" HighlightedText="@_searchString" /> 
-            </MudTd>
-            <MudTd DataLabel="Description">
-                <MudHighlighter Text="@context.Description" HighlightedText="@_searchString" />
-            </MudTd>
-            <MudTd DataLabel="Priority">@context.Priority</MudTd>
-            <MudTd DataLabel="Is Completed">@context.IsCompleteted</MudTd>
-            <MudTd DataLabel="Expiration Date">@context.ExpirationDate</MudTd>
+            <MudTd DataLabel="Titre">@context.Title</MudTd>
+            <MudTd DataLabel="Description">@context.Description</MudTd>
+            <MudTd DataLabel="Priorité">@context.Priority</MudTd>
+            <MudTd DataLabel="Terminé ?">@context.IsCompleteted</MudTd>
+            <MudTd DataLabel="Date d'expiration'">@context.ExpirationDate</MudTd>
+            <MudMenu Label="@_localizer["Actions"]" Variant="Variant.Filled" DisableElevation="true" EndIcon="@Icons.Filled.KeyboardArrowDown" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
+                <MudMenuItem @onclick="@(() => InvokeModal(@context.Id))">@_localizer["Edit"]</MudMenuItem>
+                <MudMenuItem @onclick="@(() => Delete(@context.Id))">@_localizer["Delete"]</MudMenuItem>
+            </MudMenu>
         </RowTemplate>
         <FooterContent>
             <MudSwitch @bind-Checked="@_dense" Color="Color.Secondary" Style="margin-left: 5px;">@_localizer["Dense"]</MudSwitch>
@@ -57,5 +50,6 @@ else
         <PagerContent>
             <TablePager />
         </PagerContent>
-    </MudTable>        
+
+    </MudTable>
 }
