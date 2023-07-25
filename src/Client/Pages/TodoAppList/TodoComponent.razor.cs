@@ -82,29 +82,33 @@ namespace BlazorHero.CleanArchitecture.Client.Pages.TodoAppList
 
         private async Task InvokeModal(int id = 0)
         {
-            var parameters = new DialogParameters();
             if (id != 0)
             {
-                _todo = _todoList.FirstOrDefault(t => t.Id == id);
-                if (_todo != null)
+                var todo = _todoList.FirstOrDefault(t => t.Id == id);
+                _command = new AddEditTodoCommand()
                 {
-                    parameters.Add(nameof(AddEditTodoModal.AddEditTodoModel), new AddEditTodoCommand
-                    {
-                        Id = _todo.Id,
-                        Title = _todo.Title,
-                        Description = _todo.Description,
-                        Priority = _todo.Priority,
-                        ExpirationDate = _todo.ExpirationDate,
-                        IsCompleteted = _todo.IsCompleteted
-                    });
-                }
-                var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, DisableBackdropClick = true };
-                var dialog = _dialogService.Show<AddEditTodoModal>(id == 0 ? _localizer["Create"] : _localizer["Edit"], parameters, options);
-                var result = await dialog.Result;
-                if (!result.Cancelled)
-                {
-                    await Reset();
-                }
+                    Id = todo.Id,
+                    Title = todo.Title,
+                    Description = todo.Description,
+                    Priority = todo.Priority,
+                    IsCompleteted = todo.IsCompleteted,
+                    ExpirationDate = todo.ExpirationDate
+                };
+            }
+            else
+            {
+                _command = new();
+            }
+            var parameters = new DialogParameters()
+            {
+                {nameof(AddOrEditTodoModal.AddOrEditTodoModel), _command }
+            };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, DisableBackdropClick = true };
+            var dialog = _dialogService.Show<AddOrEditTodoModal>(id == 0 ? _localizer["Create"] : _localizer["Edit"], parameters, options);
+            var result = await dialog.Result;
+            if (!result.Cancelled)
+            {
+                await Reset();
             }
         }
 

@@ -23,7 +23,7 @@ namespace BlazorHero.CleanArchitecture.Application.Features.Todos.Commands.AddEd
         [Required]
         public string Description { get; set; }
         [Required]
-        public DateTime ExpirationDate { get; set; }
+        public DateTime? ExpirationDate { get; set; }
         [Required]
         public int Priority { get; set; }
         public bool IsCompleteted { get; set; }
@@ -57,7 +57,7 @@ namespace BlazorHero.CleanArchitecture.Application.Features.Todos.Commands.AddEd
                     todo.Description = command.Description ?? todo.Description;
                     if (command.ExpirationDate != default(DateTime))
                     {
-                        todo.ExpirationDate = command.ExpirationDate;
+                        todo.ExpirationDate = (DateTime)command.ExpirationDate;
                     }
                     todo.Priority = (command.Priority != todo.Priority) ? command.Priority : todo.Priority;
                     todo.IsCompleteted = (command.IsCompleteted != todo.IsCompleteted) ? command.IsCompleteted : todo.IsCompleteted;

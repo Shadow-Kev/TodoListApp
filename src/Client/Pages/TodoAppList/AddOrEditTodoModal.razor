@@ -1,0 +1,63 @@
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer<AddOrEditTodoModal> _localizer
+
+<EditForm Model="@AddOrEditTodoModel" OnValidSubmit="SaveAsync">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <MudDialog>
+            <TitleContent>
+                @{
+                    if (AddOrEditTodoModel.Id == 0)
+                    {
+                        <MudText Typo="Typo.h6">
+                            <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3 mb-n1" />
+                            @_localizer["Add Todo"]
+                        </MudText>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.h6">
+                            <MudIcon Icon="@Icons.Material.Filled.Update" Class="mr-3 mb-n1" />
+                            @_localizer["Update Todo"]
+                        </MudText>
+                    }
+                }
+            </TitleContent>
+            <DialogContent>
+                <MudGrid>
+                    @*@if (AddOrEditTodoModel.Id != 0)
+                    {
+                        <MudItem xs="12" md="6">
+                            <MudTextField Disabled For="@(() => AddOrEditTodoModel.Id)" @bind-Value="AddOrEditTodoModel.Id" Label="@_localizer["Id"]" />
+                        </MudItem>
+                    }*@
+                    @*<MudDatePicker Editable="true" PickerVariant="PickerVariant.Inline" @bind-Date="AddOrEditTodoModel.ExpirationDate" MaxDate="_maxDate" Label="@_localizer["Expiration Date"]" />*@
+                    <MudDatePicker @bind-Date="AddOrEditTodoModel.ExpirationDate" Label="@_localizer["Expiration Date"]" MaxDate="_maxDate" />
+                    <MudItem xs="12" md="6">
+                        <MudTextField For="@(() => AddOrEditTodoModel.Title)" @bind-Value="AddOrEditTodoModel.Title" Label="@_localizer["Title"]" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField For="@(() => AddOrEditTodoModel.Description)" @bind-Value="AddOrEditTodoModel.Description" Label="@_localizer["Description"]" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudNumericField For="@(() => AddOrEditTodoModel.Priority)" @bind-Value="AddOrEditTodoModel.Priority" Label="@_localizer["Priority"]" Min="0" Max="4" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudCheckBox For="@(() => AddOrEditTodoModel.IsCompleteted)" @bind-Checked="AddOrEditTodoModel.IsCompleteted" Label="@_localizer["Is Completed"]" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                    
+                </MudItem>
+                </MudGrid>
+            </DialogContent>
+            <DialogActions>
+                <MudButton DisableElevation Variant="Variant.Filled" OnClick="Cancel">@_localizer["Cancel"]</MudButton>
+                @if (AddOrEditTodoModel.Id != 0)
+                {
+                    <MudButton DisableElevation Variant="Variant.Filled" ButtonType="ButtonType.Submit" Disabled="@(!Validated)" Color="Color.Secondary">@_localizer["Update"]</MudButton>
+                }
+                else
+                {
+                    <MudButton DisableElevation Variant="Variant.Filled" ButtonType="ButtonType.Submit" Disabled="@(!Validated)" Color="Color.Success">@_localizer["Save"]</MudButton>
+                }
+            </DialogActions>
+        </MudDialog>
+</EditForm>
