@@ -34,9 +34,36 @@ else
         <RowTemplate>
             <MudTd DataLabel="Titre">@context.Title</MudTd>
             <MudTd DataLabel="Description">@context.Description</MudTd>
-            <MudTd DataLabel="Priorité">@context.Priority</MudTd>
-            <MudTd DataLabel="Terminé ?">@context.IsCompleteted</MudTd>
-            <MudTd DataLabel="Date d'expiration'">@context.ExpirationDate</MudTd>
+            @{
+                switch(context.Priority)
+                {
+                    case 1:
+                        <MudTd DataLabel="Priorité">@_localizer["Low"]</MudTd>
+                        break;
+                    case 2:
+                        <MudTd DataLabel="Priorité">@_localizer["Medium"]</MudTd>
+                        break;
+                    case 3:
+                        <MudTd DataLabel="Priorité">@_localizer["High"]</MudTd>
+                        break;
+                    case 4:
+                        <MudTd DataLabel="Priorité">@_localizer["Urgent"]</MudTd>
+                        break;
+                    default:
+                        <MudTd DataLabel="Priorité">@_localizer["Low"]</MudTd>
+                        break;
+                }
+            }
+            @{
+                if (context.IsCompleteted == true )
+                {
+                    <MudTd DataLabel="Terminé ?">@_localizer["Yes"]</MudTd>
+                } else
+                {
+                    <MudTd DataLabel="Terminé ?">@_localizer["No"]</MudTd>
+                }
+              }      
+                    <MudTd DataLabel="Date d'expiration'">@context.ExpirationDate.ToString("D")</MudTd>
             <MudMenu Label="@_localizer["Actions"]" Variant="Variant.Filled" DisableElevation="true" EndIcon="@Icons.Filled.KeyboardArrowDown" IconColor="Color.Secondary" Direction="Direction.Left" OffsetX="true">
                 <MudMenuItem @onclick="@(() => InvokeModal(@context.Id))">@_localizer["Edit"]</MudMenuItem>
                 <MudMenuItem @onclick="@(() => Delete(@context.Id))">@_localizer["Delete"]</MudMenuItem>

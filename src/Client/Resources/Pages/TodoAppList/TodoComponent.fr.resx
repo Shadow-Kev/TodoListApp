@@ -153,6 +153,9 @@
   <data name="Filtered Todos exported" xml:space="preserve">
     <value>Tâches filtrées exportées</value>
   </data>
+  <data name="High" xml:space="preserve">
+    <value>Haute</value>
+  </data>
   <data name="Id" xml:space="preserve">
     <value>Identifiant</value>
   </data>
@@ -162,11 +165,20 @@
   <data name="Is Completed" xml:space="preserve">
     <value>Terminée</value>
   </data>
+  <data name="Low" xml:space="preserve">
+    <value>Basse</value>
+  </data>
   <data name="Manage Todos." xml:space="preserve">
     <value>Gérer les tâches.</value>
   </data>
+  <data name="Medium" xml:space="preserve">
+    <value>Moyenne</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Nom</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Non</value>
   </data>
   <data name="No Allowed Actions" xml:space="preserve">
     <value>Aucune action autorisée</value>
@@ -191,5 +203,11 @@
   </data>
   <data name="Todos exported" xml:space="preserve">
     <value>Tâches exportées</value>
+  </data>
+  <data name="Urgent" xml:space="preserve">
+    <value>Urgente</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Oui</value>
   </data>
 </root>
